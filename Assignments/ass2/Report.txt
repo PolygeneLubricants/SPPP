@@ -91,6 +91,8 @@ We see no time difference between the two classes.
 We do not have a field for the atomic integer because we parse it as a parameter. If it was a field, it would not need to be final, but it would be best practice to declare it as so. (Should : yes, Must: no)
 
 2.4.1
-
+This is important to ensure visibility between the threads.
 
 2.4.2
+This is important to ensure that the properties are visible to other threads.
+In this particular example, where the OneValueCache instance is stored in a volatile field: If these two fields were not final, then the Factorizer would be able to access OneValueCache, but the two fields would not necessarily be visible to the current thread.
