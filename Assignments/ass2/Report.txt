@@ -24,8 +24,12 @@ No it does not matter.
 The synchronized method LongCounter.increment has ensured that the correct value for LongCounter.count is always in memory. LongCounter.get is called once on the main thread and only after all other threads has terminated, plus LonngCounter.increment has never been called on the main thread thus LongCounter.count has not been cached by the main thread and is read from memory.
 
 2.3.1
+$ time java TestCountFactors
+Total number of factors is  18703729
 
-
+real    0m8.676s
+user    0m0.015s
+sys     0m0.000s
 2.3.2
 
 2.3.3
