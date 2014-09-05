@@ -20,6 +20,8 @@ public class ParallelCountFactorsUsingFutures {
         }
 
         System.out.printf("Total number of factors is %9d%n", count);
+
+        executor.shutdown();
     }
 
     public static Future<Integer> createWorker(final int from) {

@@ -15,7 +15,13 @@ No, you can not rely on the termination of the program. You will need a memory b
 Using volatile is sufficient, as it applies a memory barrier before read operations and after write operations. And, the value we write is not based on the original value, so there is no need to make any operation atomic.
 
 2.2.1
+> time java TestCountPrimes
+Parallel10 result:     664579
 
+
+real    0m4.473s
+user    0m0.000s
+sys     0m0.000s
 
 2.2.2
 Faster
@@ -28,20 +34,63 @@ No it does not matter.
 The synchronized method LongCounter.increment has ensured that the correct value for LongCounter.count is always in memory. LongCounter.get is called once on the main thread and only after all other threads has terminated, plus LonngCounter.increment has never been called on the main thread thus LongCounter.count has not been cached by the main thread and is read from memory.
 
 2.3.1
-$ time java TestCountFactors
+>time java TestCountFactors
 Total number of factors is  18703729
 
 real    0m8.676s
 user    0m0.015s
 sys     0m0.000s
 2.3.2
+public class MyAtomicInteger {
+    private int counter;
+
+    public synchronized int addAndGet(int amount) {
+        counter += amount;
+        return counter;
+    }
+
+    public synchronized int get() {
+        return counter;
+    }
+}
 
 2.3.3
+Below are two implementations of CountFactors. One using Threads and MyAtomicInteger, and a better one, using futures.
+Thread solution:
+> time java ParallelCountFactors
+Total number of factors is  18703729
+
+real    0m4.643s
+user    0m0.015s
+sys     0m0.000s
+
+Future solution:
+> time java ParallelCountFactorsUsingFutures
+Total number of factors is  18703729
+
+real    0m4.642s
+user    0m0.000s
+sys     0m0.015s
+
+There is no performance-gain in the future solution in this particular case, because this has to create and destroy the threads as well.
 
 2.3.4
+No, because += is not an atomic operation.
 
 2.3.5
+> time java ParallelCountFactorsWithJavaAtomicInteger
+Total number of factors is  18703729
+
+real    0m4.650s
+user    0m0.015s
+sys     0m0.000s
+
+We see no time difference between the two classes.
+
+"Should the atomic field be declared final?"
+We do not have a field for the atomic integer because we parse it as a parameter. If it was a field, it would not need to be final, but it would be best practice to declare it as so. (Should : yes, Must: no)
 
 2.4.1
+
 
 2.4.2
