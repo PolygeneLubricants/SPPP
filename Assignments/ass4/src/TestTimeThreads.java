@@ -5,6 +5,8 @@
 // Microbenchmarks for small object creation, Thread creation, thread
 // start, thread execution and join, taking an uncontended lock.
 
+import benchmarks.IntToDouble;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TestTimeThreads {

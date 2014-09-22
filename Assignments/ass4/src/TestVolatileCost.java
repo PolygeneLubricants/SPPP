@@ -3,6 +3,8 @@
 // Experiment with volatile and non-volatile
 // sestoft@itu.dk * 2012-10-21, 2014-09-10
 
+import benchmarks.IntToDouble;
+
 class TestVolatileCost {
   public static void main(String[] args) {
     final int size = 10_000;
