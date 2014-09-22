@@ -1,0 +1,24 @@
+# OS:   Mac OS X; 10.9.4; x86_64
+# JVM:  Oracle Corporation; 1.8.0_20
+# CPU:  null
+# Date: 2014-09-22T12:27:08+0200
+# Processor name:       Intel Core i7
+# Processor speed:      2,9 GHz
+# Processor count:      1
+# Total core count:     2
+# L2-buffer (pr. Core): 256 KB
+# L3-buffer:    4 MB
+# Memory:       8 GB
+
+pow                                  73,3 ns       1,20    4194304
+exp                                  53,6 ns       1,11    8388608
+log                                  24,6 ns       3,61   16777216
+sin                                 112,7 ns       2,00    4194304
+cos                                 112,2 ns       1,93    4194304
+tan                                 141,9 ns       1,67    2097152
+asin                                222,5 ns       6,43    2097152
+acos                                212,7 ns       3,40    2097152
+atan                                 49,8 ns       0,79    8388608
+
+The measurements are not surprising. Their execution time follows the operations (and number of) used, e.g. asin and acos is significantly slower than sin and cos because they use division, an expensive operation.
+
