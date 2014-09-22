@@ -1,0 +1,24 @@
+# JVM:  Oracle Corporation; 1.8.0_20
+# OS:   Mac OS X; 10.9.4; x86_64
+# CPU:  null
+# Date: 2014-09-22T12:27:08+0200
+# Processor name:       Intel Core i7
+# Processor speed:      2,9 GHz
+# Processor count:      1
+# Total core count:     2
+# L2-buffer (pr. Core): 256 KB
+# L3-buffer:    4 MB
+# Memory:       8 GB
+
+hashCode()                            2,6 ns       0,04  134217728
+Point creation                       74,3 ns       1,24    4194304
+Thread's work                      6358,6 ns     103,98      65536
+Thread create                      1422,1 ns      18,76     262144
+Thread create start               49486,1 ns     398,07       8192
+Thread create start join          65432,2 ns     953,63       4096
+ai value = 1556420000
+Uncontended lock                      5,5 ns       0,11   67108864
+
+'Thread's work' + 'Thread create start' = 6358,6 ns + 49486,1 ns = 55844.7
+One would expect 'Thread create start join' to be approximately 55844. However, it is not,
+because the main thread needs to be activated and notified that the other thread has completed.

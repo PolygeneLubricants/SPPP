@@ -1,0 +1,51 @@
+# OS:   Mac OS X; 10.9.4; x86_64
+# JVM:  Oracle Corporation; 1.8.0_20
+# CPU:  null
+# Date: 2014-09-22T12:27:08+0200
+# Processor name:       Intel Core i7
+# Processor speed:      2,9 GHz
+# Processor count:      1
+# Total core count:     2
+# L2-buffer (pr. Core): 256 KB
+# L3-buffer:    4 MB
+# Memory:       8 GB
+
+4.3.1
+countParallel      1              10749,4 us     127,01         32
+countParallel      2               6760,2 us      79,43         64
+countParallel      3               5767,0 us     139,32         64
+countParallel      4               5074,0 us     142,14         64
+countParallel      5               5277,8 us      66,78         64
+countParallel      6               5175,1 us      17,79         64
+countParallel      7               5093,4 us     238,34         64
+countParallel      8               4871,6 us      46,43         64
+countParallel      9               4895,5 us      24,27         64
+countParallel     10               5214,6 us     308,46         64
+countParallel     11               4865,5 us     171,09         64
+countParallel     12               4846,8 us     136,59         64
+countParallel     13               4839,4 us      64,30         64
+countParallel     14               4889,9 us      26,28         64
+countParallel     15               4754,8 us      20,99         64
+countParallel     16               4736,4 us      14,79         64
+countParallel     17               4943,3 us     140,49         64
+countParallel     18               5078,5 us     233,94         64
+countParallel     19               4812,8 us      45,28         64
+countParallel     20               5045,3 us     233,38         64
+countParallel     21               4825,0 us      20,51         64
+countParallel     22               4901,8 us      39,43         64
+countParallel     23               4826,2 us      20,18         64
+countParallel     24               4820,2 us      10,67         64
+countParallel     25               4882,9 us      49,71         64
+countParallel     26               4919,3 us      12,57         64
+countParallel     27               4906,1 us      43,51         64
+countParallel     28               4931,1 us      11,40         64
+countParallel     29               5084,1 us     146,58         64
+countParallel     30               5026,9 us      53,18         64
+countParallel     31               4963,8 us      29,37         64
+countParallel     32               4998,1 us      23,42         64
+
+4.3.2
+
+
+4.3.3
+The machine we tested on only had 4 logical cores. And, since the threads only performs work on the processor (no IO) more than 4 threads is wastefull.

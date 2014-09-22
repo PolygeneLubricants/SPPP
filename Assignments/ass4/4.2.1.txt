@@ -1,0 +1,3 @@
+Point creation is impacted by the garbage collector, which produces intermittent outliers.
+
+We see that starting a thread is expensive. This is not unusual and is the reason why thread pools are used.
