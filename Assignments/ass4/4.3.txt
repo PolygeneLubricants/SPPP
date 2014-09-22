@@ -1,0 +1,95 @@
+# OS:   Mac OS X; 10.9.4; x86_64
+# JVM:  Oracle Corporation; 1.8.0_20
+# CPU:  null
+# Date: 2014-09-22T12:27:08+0200
+# Processor name:       Intel Core i7
+# Processor speed:      2,9 GHz
+# Processor count:      1
+# Total core count:     2
+# L2-buffer (pr. Core): 256 KB
+# L3-buffer:    4 MB
+# Memory:       8 GB
+
+4.3.1
+countParallel      1              10749,4 us     127,01         32
+countParallel      2               6760,2 us      79,43         64
+countParallel      3               5767,0 us     139,32         64
+countParallel      4               5074,0 us     142,14         64
+countParallel      5               5277,8 us      66,78         64
+countParallel      6               5175,1 us      17,79         64
+countParallel      7               5093,4 us     238,34         64
+countParallel      8               4871,6 us      46,43         64
+countParallel      9               4895,5 us      24,27         64
+countParallel     10               5214,6 us     308,46         64
+countParallel     11               4865,5 us     171,09         64
+countParallel     12               4846,8 us     136,59         64
+countParallel     13               4839,4 us      64,30         64
+countParallel     14               4889,9 us      26,28         64
+countParallel     15               4754,8 us      20,99         64
+countParallel     16               4736,4 us      14,79         64
+countParallel     17               4943,3 us     140,49         64
+countParallel     18               5078,5 us     233,94         64
+countParallel     19               4812,8 us      45,28         64
+countParallel     20               5045,3 us     233,38         64
+countParallel     21               4825,0 us      20,51         64
+countParallel     22               4901,8 us      39,43         64
+countParallel     23               4826,2 us      20,18         64
+countParallel     24               4820,2 us      10,67         64
+countParallel     25               4882,9 us      49,71         64
+countParallel     26               4919,3 us      12,57         64
+countParallel     27               4906,1 us      43,51         64
+countParallel     28               4931,1 us      11,40         64
+countParallel     29               5084,1 us     146,58         64
+countParallel     30               5026,9 us      53,18         64
+countParallel     31               4963,8 us      29,37         64
+countParallel     32               4998,1 us      23,42         64
+
+4.3.2
+
+
+4.3.3
+The machine we tested on only had 4 logical cores. And, since the threads only performs work on the processor (no IO) more than 4 threads is theoretically wastefull.
+However, increasing the number of threads may result in an increase to the total processing time of the application, as the OS may schedule one or more of the threads to run more often. But to many threads will make the scheduler overhead apparent and slow down the application.
+
+4.3.4
+countParallel      1              10296,0 us     182,94         32
+countParallel      2               6671,5 us     123,33         64
+countParallel      3               6286,0 us     211,89         64
+countParallel      4               5165,2 us     233,42         64
+countParallel      5               5189,1 us     108,15         64
+countParallel      6               5296,6 us     227,14         64
+countParallel      7               4767,7 us      31,10         64
+countParallel      8               4701,0 us      15,02         64
+countParallel      9               4784,6 us      48,65         64
+countParallel     10               4846,4 us      30,54         64
+countParallel     11               4647,2 us      35,00         64
+countParallel     12               4674,0 us      48,24         64
+countParallel     13               4619,6 us      10,62         64
+countParallel     14               4854,0 us      45,81         64
+countParallel     15               4603,9 us       4,61         64
+countParallel     16               4707,4 us     106,49         64
+countParallel     17               4889,9 us     241,70         64
+countParallel     18               4850,2 us     100,51         64
+countParallel     19               4751,0 us     116,34         64
+countParallel     20               4798,9 us     143,85         64
+countParallel     21               4969,6 us     270,17         64
+countParallel     22               5002,2 us     215,71         64
+countParallel     23               4867,4 us     158,17         64
+countParallel     24               4895,5 us     155,34         64
+countParallel     25               5191,8 us     291,02         64
+countParallel     26               4983,0 us     116,48         64
+countParallel     27               4811,1 us      52,19         64
+countParallel     28               4850,8 us      34,77         64
+countParallel     29               5254,4 us     257,99         64
+countParallel     30               4940,7 us      34,00         64
+countParallel     31               4908,9 us      24,36         64
+countParallel     32               4968,4 us      52,93         64
+
+We expected AtomicLong to perform better than LongCounter, because it is lockless. However, this can not be seen from the measurements the reason is that the majority af the work is determining if a number is a prime.
+
+"Should one in general use adequate built-in classes and methods when they exist?"
+Yes.. why create something which already exists? If you can make it better for your special use case then it would make sense, but not in general.
+
+
+4.3.5
+We see no performance increase. The reason this is not faster is the same as above, the majority of the work is determining whether a number is a prime.

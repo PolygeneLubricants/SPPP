@@ -4,6 +4,10 @@
 // sestoft@itu.dk * 2014-08-31
 
 import benchmarks.*;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 public class TestCountPrimesThreads {
   public static void main(String[] args) {
     SystemInfo();
@@ -50,18 +54,21 @@ public class TestCountPrimesThreads {
   // General parallel solution, using multiple threads
   private static long countParallelN(int range, int threadCount) {
     final int perThread = range / threadCount;
-    final LongCounter lc = new LongCounter();
-    Thread[] threads = new Thread[threadCount];
-    for (int t=0; t<threadCount; t++) {
-      final int from = perThread * t, 
-        to = (t+1==threadCount) ? range : perThread * (t+1); 
-      threads[t] = new Thread(new Runnable() { public void run() {
-        for (int i=from; i<to; i++)
-          if (isPrime(i))
-            lc.increment();
-      }});
-    }
-    for (int t=0; t<threadCount; t++) 
+      final AtomicLong lc = new AtomicLong();
+      Thread[] threads = new Thread[threadCount];
+      for (int t=0; t<threadCount; t++) {
+          final int from = perThread * t,
+                  to = (t+1==threadCount) ? range : perThread * (t+1);
+          threads[t] = new Thread(new Runnable() { public void run() {
+              long count = 0;
+              for (int i=from; i<to; i++)
+                  if (isPrime(i))
+                      count++;
+
+              lc.addAndGet(count);
+          }});
+      }
+      for (int t=0; t<threadCount; t++)
       threads[t].start();
     try {
       for (int t=0; t<threadCount; t++) 
