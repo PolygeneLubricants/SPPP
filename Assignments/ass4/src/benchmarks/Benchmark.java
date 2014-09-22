@@ -18,11 +18,11 @@ class Benchmark {
     Mark5();
       System.out.println("Mark6");
     Mark6("multiply", new IntToDouble() { 
-        public double call(int i) { return multiply(i); } });*/
-    Mark7("multiply", new IntToDouble() {
         public double call(int i) { return multiply(i); } });
-    /*MathFunctionBenchmarks();
-    final java.util.Random rnd = new java.util.Random();
+    Mark7("multiply", new IntToDouble() {
+        public double call(int i) { return multiply(i); } });*/
+    MathFunctionBenchmarks();
+    /*final java.util.Random rnd = new java.util.Random();
     final int n = 1638400;
     Mark8("random_index", new IntToDouble() {
      public double call(int i) { return rnd.nextInt(n); } });
