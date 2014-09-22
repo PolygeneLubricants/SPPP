@@ -1,0 +1,98 @@
+# OS:   Mac OS X; 10.9.4; x86_64
+# JVM:  Oracle Corporation; 1.8.0_20
+# CPU:  null
+# Date: 2014-09-22T12:27:08+0200
+# Processor name:	Intel Core i7
+# Processor speed:	2,9 GHz
+# Processor count:	1
+# Total core count:	2
+# L2-buffer (pr. Core):	256 KB
+# L3-buffer:	4 MB
+# Memory:	8 GB
+
+Mark1
+   5,3 ns
+
+We get a similar result as the measurement result listed in the microbenchmarks lecture note.
+However, as stated in the lecture note, the multiplication is not performed because the JIT compiler removes the body of the loop, because it has no effect (it's dead code).
+
+Mark2
+  29,8 ns
+
+Our result is more than twice as large as the one in the lecture notes, but this is due to different hardware.
+
+Mark3
+  29,5 ns
+  29,6 ns
+  29,4 ns
+  29,7 ns
+  29,1 ns
+  29,0 ns
+  29,0 ns
+  29,7 ns
+  29,4 ns
+  29,1 ns
+
+We get the same results as in Mark2, as expected.
+
+Mark4
+  29,4 ns +/-  0,235
+
+Based on Mark3 this is expected.
+
+Mark5
+ 279,6 ns +/-   554,62          2
+  67,8 ns +/-    27,35          4
+  52,8 ns +/-    12,29          8
+  42,6 ns +/-     6,02         16
+  37,6 ns +/-     2,71         32
+  37,1 ns +/-     5,31         64
+  34,8 ns +/-     1,89        128
+  34,5 ns +/-     1,81        256
+  51,3 ns +/-     1,95        512
+  33,2 ns +/-     3,10       1024
+  36,3 ns +/-     5,36       2048
+  43,0 ns +/-     8,86       4096
+  32,6 ns +/-     2,23       8192
+  31,4 ns +/-     1,02      16384
+  29,1 ns +/-     0,93      32768
+  31,2 ns +/-     3,57      65536
+  28,8 ns +/-     0,43     131072
+  28,8 ns +/-     0,46     262144
+  29,0 ns +/-     0,20     524288
+  30,3 ns +/-     1,72    1048576
+  29,0 ns +/-     0,53    2097152
+  29,1 ns +/-     0,28    4194304
+  29,5 ns +/-     0,80    8388608
+  29,5 ns +/-     0,33   16777216
+
+The first run (with 2 run throughs of the loop) is impacted by the JIT compiler as it translates the byte code to machine code.
+As the loop count increases we can observe the standard deviation decrease. This is expected as context switching will produce outliers. Increasing the number of loop iterations reduces the impact of these outliers.
+
+Mark6
+multiply                            542,5 ns    1054,40          2
+multiply                            186,9 ns      39,21          4
+multiply                            186,4 ns      63,46          8
+multiply                            236,9 ns     181,16         16
+multiply                             65,1 ns      57,13         32
+multiply                             47,6 ns       8,49         64
+multiply                             45,6 ns       3,95        128
+multiply                             44,9 ns       2,31        256
+multiply                             63,2 ns       2,43        512
+multiply                             44,5 ns       6,64       1024
+multiply                             39,4 ns       3,24       2048
+multiply                             48,2 ns       8,28       4096
+multiply                             32,8 ns       2,87       8192
+multiply                             31,4 ns       0,31      16384
+multiply                             29,8 ns       1,18      32768
+multiply                             33,6 ns       8,95      65536
+multiply                             31,1 ns       3,87     131072
+multiply                             28,8 ns       0,30     262144
+multiply                             29,5 ns       1,49     524288
+multiply                             29,1 ns       0,48    1048576
+multiply                             29,1 ns       0,37    2097152
+multiply                             29,5 ns       0,68    4194304
+multiply                             29,2 ns       0,36    8388608
+multiply                             29,0 ns       0,38   16777216
+
+This is expected to be similar to the output of Mark5, which it is.

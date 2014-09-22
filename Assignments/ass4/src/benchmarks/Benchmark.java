@@ -5,27 +5,33 @@ package benchmarks;
 class Benchmark {
   public static void main(String[] args) {
     SystemInfo();
-    Mark0();
-    Mark1();
+    //Mark0();
+    System.out.println("Mark1");
+    /*Mark1();
+      System.out.println("Mark2");
     Mark2();
+      System.out.println("Mark3");
     Mark3();
+      System.out.println("Mark4");
     Mark4();
+      System.out.println("Mark5");
     Mark5();
+      System.out.println("Mark6");
     Mark6("multiply", new IntToDouble() { 
+        public double call(int i) { return multiply(i); } });*/
+    Mark7("multiply", new IntToDouble() {
         public double call(int i) { return multiply(i); } });
-    Mark7("multiply", new IntToDouble() { 
-        public double call(int i) { return multiply(i); } });
-    MathFunctionBenchmarks();
+    /*MathFunctionBenchmarks();
     final java.util.Random rnd = new java.util.Random();
     final int n = 1638400;
-    Mark8("random_index", new IntToDouble() { 
+    Mark8("random_index", new IntToDouble() {
      public double call(int i) { return rnd.nextInt(n); } });
     SearchBenchmarks();
     SearchScalabilityBenchmarks1();
     SearchScalabilityBenchmarks2();
     GetPseudorandomItems();
     SortingBenchmarks();
-    SortingScalabilityBenchmarks();
+    SortingScalabilityBenchmarks();*/
   }
 
   // ========== Example functions and benchmarks ==========
