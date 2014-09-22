@@ -3,6 +3,7 @@
 // (Much simplified from CountprimesMany.java)
 // sestoft@itu.dk * 2014-08-31
 
+import benchmarks.*;
 public class TestCountPrimesThreads {
   public static void main(String[] args) {
     SystemInfo();
