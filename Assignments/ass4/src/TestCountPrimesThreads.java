@@ -9,11 +9,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class TestCountPrimesThreads {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
     SystemInfo();
     final int range = 100_000;
     // Mark6("countSequential", new IntToDouble() {
-    //     public double call(int i) { 
+    //     public double call(int i) {
     //       return countSequential(range);
     //     }});
     // Mark6("countParallel", new IntToDouble() {
@@ -26,11 +26,9 @@ public class TestCountPrimesThreads {
     //     }});
     for (int c=1; c<=32; c++) {
       final int threadCount = c;
-      Mark7(String.format("countParallel %6d", threadCount), 
-        new IntToDouble() {
-          public double call(int i) { 
-            return countParallelN(range, threadCount);
-          }});
+      Computable<Long, long[]> factorizer = new Factorizer2(),
+      cachingFactorizer = new Memoizer5<Long,long[]>(factorizer);
+      Mark7(String.format("Factorize %6d", threadCount), cachingFactorizer);
     }
   }
 
@@ -103,23 +101,25 @@ public class TestCountPrimesThreads {
     return dummy / totalCount;
   }
 
-  public static double Mark7(String msg, IntToDouble f) {
+  public static double Mark7(String msg, Computable<Long, long[]> f) throws InterruptedException {
     int n = 10, count = 1, totalCount = 0;
-    double dummy = 0.0, runningTime = 0.0, st = 0.0, sst = 0.0;
+    double runningTime = 0.0, st = 0.0, sst = 0.0;
+    double dummy = 0.0;
+    long p = 71827636563813L;
     do { 
       count *= 2;
       st = sst = 0.0;
       for (int j=0; j<n; j++) {
         Timer t = new Timer();
         for (int i=0; i<count; i++) 
-          dummy += f.call(i);
+          dummy += f.compute(Integer.toUnsignedLong(i)).length;
         runningTime = t.check();
         double time = runningTime * 1e6 / count; // microseconds
         st += time; 
         sst += time * time;
         totalCount += count;
       }
-    } while (runningTime < 0.25 && count < Integer.MAX_VALUE/2);
+    } while (runningTime < 0.25 && count < Integer.MAX_VALUE); // This runs too slowly with Integer.MAX_VALUE. Change this so each thread runs a partitioned load, as suggested in 4.4
     double mean = st/n, sdev = Math.sqrt(sst/n - mean*mean);
     System.out.printf("%-25s %15.1f us %10.2f %10d%n", msg, mean, sdev, count);
     return dummy / totalCount;

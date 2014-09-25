@@ -3,8 +3,6 @@
 // Code from Goetz et al 5.6, written by Brian Goetz and Tim Peierls.
 // Modifications by sestoft@itu.dk * 2014-09-08
 
-import benchmarks.IntToDouble;
-
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -13,259 +11,34 @@ import java.util.function.Function;
 
 
 public class TestCache {
-    public static void main(String[] args) throws InterruptedException {
-        final Computable<Long, long[]> Factorizer2 = new Factorizer2(),
-                cachingFactorizer2 = new Memoizer5<Long, long[]>(Factorizer2);
-        // cachingFactorizer2 = Factorizer2;
+  public static void main(String[] args) throws InterruptedException {
+    Computable<Long, long[]> factorizer = new Factorizer2(),
+      cachingFactorizer = new Memoizer5<Long,long[]>(factorizer);
+    // cachingFactorizer = factorizer;
+    
+    long p = 71827636563813227L;
 
-        Mark7("mem1", new IntToDouble() {
-            @Override
-            public double call(int i) {
-                Memoizer3 m = new Memoizer3(Factorizer2);
-                Thread[] threads = new Thread[16];
-                for (int t=0; t<16; t++) {
-                    final int tid = t;
-                    threads[t] = new Thread(new Runnable() { public void run() {
-                        try {
-                            long start = 10_000_000_000L;
-                            long end = 10_000_001_999L;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
+    print(factorizer.compute(p));
 
-                            start = 10_000_002_000L + tid * 500;
-                            end = 10_000_003_999L + tid * 500;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-                        } catch (InterruptedException e) {
-                        }
-                    }});
-                    threads[t].start();
-                }
+    long[] factors = cachingFactorizer.compute(p);
+    print(factors);
 
-                try {
-                    for (int t=0; t<16; t++)
-                        threads[t].join();
-                } catch (InterruptedException exn) { }
-                return 0;
-            }
-        });
+    print(cachingFactorizer.compute(p));
+    print(cachingFactorizer.compute(p));
+    print(cachingFactorizer.compute(p));
+    print(cachingFactorizer.compute(p));
+    print(cachingFactorizer.compute(p));
+    print(cachingFactorizer.compute(p));
+    print(cachingFactorizer.compute(p));
+  }
 
-        Mark7("mem2", new IntToDouble() {
-            @Override
-            public double call(int i) {
-                Memoizer3 m = new Memoizer3(Factorizer2);
-                Thread[] threads = new Thread[16];
-                for (int t=0; t<16; t++) {
-                    final int tid = t;
-                    threads[t] = new Thread(new Runnable() { public void run() {
-                        try {
-                            long start = 10_000_000_000L;
-                            long end = 10_000_001_999L;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-
-                            start = 10_000_002_000L + tid * 500;
-                            end = 10_000_003_999L + tid * 500;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-                        } catch (InterruptedException e) {
-                        }
-                    }});
-                    threads[t].start();
-                }
-
-                try {
-                    for (int t=0; t<16; t++)
-                        threads[t].join();
-                } catch (InterruptedException exn) { }
-                return 0;
-            }
-        });
-
-        Mark7("mem3", new IntToDouble() {
-            @Override
-            public double call(int i) {
-                Memoizer3 m = new Memoizer3(Factorizer2);
-                Thread[] threads = new Thread[16];
-                for (int t=0; t<16; t++) {
-                    final int tid = t;
-                    threads[t] = new Thread(new Runnable() { public void run() {
-                        try {
-                            long start = 10_000_000_000L;
-                            long end = 10_000_001_999L;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-
-                            start = 10_000_002_000L + tid * 500;
-                            end = 10_000_003_999L + tid * 500;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-                        } catch (InterruptedException e) {
-                        }
-                    }});
-                    threads[t].start();
-                }
-
-                try {
-                    for (int t=0; t<16; t++)
-                        threads[t].join();
-                } catch (InterruptedException exn) { }
-                return 0;
-            }
-        });
-
-        Mark7("mem4", new IntToDouble() {
-            @Override
-            public double call(int i) {
-                Memoizer4 m = new Memoizer4(Factorizer2);
-                Thread[] threads = new Thread[16];
-                for (int t=0; t<16; t++) {
-                    final int tid = t;
-                    threads[t] = new Thread(new Runnable() { public void run() {
-                        try {
-                            long start = 10_000_000_000L;
-                            long end = 10_000_001_999L;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-
-                            start = 10_000_002_000L + tid * 500;
-                            end = 10_000_003_999L + tid * 500;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-                        } catch (InterruptedException e) {
-                        }
-                    }});
-                    threads[t].start();
-                }
-
-                try {
-                    for (int t=0; t<16; t++)
-                        threads[t].join();
-                } catch (InterruptedException exn) { }
-                return 0;
-            }
-        });
-
-        Mark7("mem5", new IntToDouble() {
-            @Override
-            public double call(int i) {
-                Memoizer5 m = new Memoizer5(Factorizer2);
-                Thread[] threads = new Thread[16];
-                for (int t=0; t<16; t++) {
-                    final int tid = t;
-                    threads[t] = new Thread(new Runnable() { public void run() {
-                        try {
-                            long start = 10_000_000_000L;
-                            long end = 10_000_001_999L;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-
-                            start = 10_000_002_000L + tid * 500;
-                            end = 10_000_003_999L + tid * 500;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-                        } catch (InterruptedException e) {
-                        }
-                    }});
-                    threads[t].start();
-                }
-
-                try {
-                    for (int t=0; t<16; t++)
-                        threads[t].join();
-                } catch (InterruptedException exn) { }
-                return 0;
-            }
-        });
-
-        Mark7("mem0", new IntToDouble() {
-            @Override
-            public double call(int i) {
-                Memoizer m = new Memoizer(Factorizer2);
-                Thread[] threads = new Thread[16];
-                for (int t=0; t<16; t++) {
-                    final int tid = t;
-                    threads[t] = new Thread(new Runnable() { public void run() {
-                        try {
-                            long start = 10_000_000_000L;
-                            long end = 10_000_001_999L;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-
-                            start = 10_000_002_000L + tid * 500;
-                            end = 10_000_003_999L + tid * 500;
-                            for(long j = start; j <= end; j++) {
-                                m.compute(j);
-                            }
-                        } catch (InterruptedException e) {
-                        }
-                    }});
-                    threads[t].start();
-                }
-
-                try {
-                    for (int t=0; t<16; t++)
-                        threads[t].join();
-                } catch (InterruptedException exn) { }
-                return 0;
-            }
-        });
-
-        long p = 71827636563813227L;
-
-        print(Factorizer2.compute(p));
-
-        long[] factors = cachingFactorizer2.compute(p);
-        print(factors);
-
-        print(cachingFactorizer2.compute(p));
-        print(cachingFactorizer2.compute(p));
-        print(cachingFactorizer2.compute(p));
-        print(cachingFactorizer2.compute(p));
-        print(cachingFactorizer2.compute(p));
-        print(cachingFactorizer2.compute(p));
-        print(cachingFactorizer2.compute(p));
-    }
-
-    private static void print(long[] arr) {
-        for (long x : arr)
-            System.out.print(" " + x);
-        System.out.println();
-    }
-
-    public static double Mark7(String msg, IntToDouble f) {
-        int n = 10, count = 1, totalCount = 0;
-        double dummy = 0.0, runningTime = 0.0, st = 0.0, sst = 0.0;
-        do {
-            count *= 2;
-            st = sst = 0.0;
-            for (int j = 0; j < n; j++) {
-                Timer t = new Timer();
-                for (int i = 0; i < count; i++)
-                    dummy += f.call(i);
-                runningTime = t.check();
-                double time = runningTime * 1e9 / count; // nanoseconds
-                st += time;
-                sst += time * time;
-                totalCount += count;
-            }
-        } while (runningTime < 0.25 && count < Integer.MAX_VALUE / 2);
-        double mean = st / n, sdev = Math.sqrt(sst / n - mean * mean);
-        System.out.printf("%-25s %15.1f ns %10.2f %10d%n", msg, mean, sdev, count);
-        return dummy / totalCount;
-    }
+  private static void print(long[] arr) {
+    for (long x : arr) 
+      System.out.print(" " + x);
+    System.out.println();
+  }
 }
+
 
 // Interface that represents a function from A to V
 interface Computable <A, V> {
@@ -275,7 +48,7 @@ interface Computable <A, V> {
 
 // Prime factorization is a function from Long to long[]
 class Factorizer2 implements Computable<Long, long[]> {
-  // For statistics only, count number of calls to Factorizer2:
+  // For statistics only, count number of calls to factorizer:
   private final AtomicLong count = new AtomicLong(0);
   public long getCount() { return count.longValue(); }
 
