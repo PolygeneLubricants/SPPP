@@ -1,4 +1,3 @@
-8.1
 7.1.5
 We chose the implementation 2. 
 We iterate over the stripes, locking each stripe as we iterate over it's buckets, and the nodes in each bucket.
@@ -39,11 +38,16 @@ WrapConcHashMap       16         120693.8 us    2746.71          4
 99992.0
 
 StripedWriteMap is faster than StripedMap, due to the reduced overhead from locking.
-The number of buckets must be able to be doubled. If h % lockCount is not invariant under doubling the number of buckets, then a lock-stripe may think it has locked a bucket, but after doubling the buckets, another stripe is responsible for that bucket.
 
 8.3.1
-
+SwingWorker cannot guarantee that process is executed before publish runs. This can create concurrency issues when trying to calculate the ProgressBar's value.
+We have chosen solution 1, creating a SwingWorker for each url. This is done by using a composite wrapper (DownloadWorkerContainer).
+It takes a TextArea, a list of urls and a progressbar, and creates an appropriate number of DownloadWorkers, and adds ChangeListeners.
+It also wraps the functionality of the DownloadWorker, such that execute() and cancel() can be called. This triggers an iteration over each DownloadWorker, which calls the appropriate method (execute and cancel).
 
 8.3.2
+The DownloadWorkerContainer has a cancel method, which iterates over each DownloadWorker, and calls cancel() on each worker.
 
 8.3.3
+The ProgressBar's maximum has been changed to the number of workers (23). doInBackground sets it's progress to 100% (for the individual worker) when it has downloaded the page.
+The ProgressBar is then updated through an atomic integer, to increment this. When all workers are done, the total is 23.
