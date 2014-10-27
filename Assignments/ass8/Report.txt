@@ -1,0 +1,18 @@
+8.1
+7.1.5
+We chose the implementation 2. 
+We iterate over the stripes, locking each stripe as we iterate over it's buckets, and the nodes in each bucket.
+
+7.1.7
+
+
+7.1.8
+Everything apart from forEach and size, only accesses a single bucket. This only triggers a single lock, dispite the amount of stripes. 
+forEach and size needs to lock every stripe as it iterates over all buckets. Thus, increasing the amount of stripes will increase the overhead introduced by synchronization.
+The expected usage pattern for StripedMap<K, V> will not access all buckets simultanousely. Thus, the single-bucket locking operations will not get lock conflicts often.
+
+7.1.9
+By increasing the number of stripes, each stripe will hold fewer buckets. The number of threads does not necessarily limit the number of stripes, as each thread can still try and access buckets next to each other, thus coliding with the same stripe over multiple threads. The optimal number of stripes is whichever creates the fewest lock-collisions, while still maintaining a minimal overhead.
+
+7.1.10
+The number of buckets must be able to be doubled. If h % lockCount is not invariant under doubling the number of buckets, then a lock-stripe may think it has locked a bucket, but after doubling the buckets, another stripe is responsible for that bucket.
