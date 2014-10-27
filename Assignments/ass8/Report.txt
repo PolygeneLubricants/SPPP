@@ -39,3 +39,11 @@ WrapConcHashMap       16         120693.8 us    2746.71          4
 99992.0
 
 StripedWriteMap is faster than StripedMap, due to the reduced overhead from locking.
+The number of buckets must be able to be doubled. If h % lockCount is not invariant under doubling the number of buckets, then a lock-stripe may think it has locked a bucket, but after doubling the buckets, another stripe is responsible for that bucket.
+
+8.3.1
+
+
+8.3.2
+
+8.3.3
