@@ -4,7 +4,14 @@ We chose the implementation 2.
 We iterate over the stripes, locking each stripe as we iterate over it's buckets, and the nodes in each bucket.
 
 7.1.7
+# OS:   Mac OS X; 10.9.5; x86_64
+# JVM:  Oracle Corporation; 1.8.0_20
+# CPU:  null
+# Date: 2014-10-27T16:11:31+0100
+SynchronizedMap       16        1660134.0 us   41768.00          2
+StripedMap            16         553854.0 us   78551.35          2
 
+StripedMap is the fastest, as expected. The synchromised map only allows one thread acces at a time, while the StripedMap allows n threads access, where n is the number of stripes.
 
 7.1.8
 Everything apart from forEach and size, only accesses a single bucket. This only triggers a single lock, dispite the amount of stripes. 
@@ -16,3 +23,19 @@ By increasing the number of stripes, each stripe will hold fewer buckets. The nu
 
 7.1.10
 The number of buckets must be able to be doubled. If h % lockCount is not invariant under doubling the number of buckets, then a lock-stripe may think it has locked a bucket, but after doubling the buckets, another stripe is responsible for that bucket.
+
+
+7.2.2
+because the size has not changed... and there is no visibility concerns
+
+7.2.5
+SynchronizedMap       16         491925.3 us   16689.37          2
+99992.0
+StripedMap            16         196761.5 us   37335.62          2
+99992.0
+StripedWriteMap       16         142097.6 us   31387.11          2
+99992.0
+WrapConcHashMap       16         120693.8 us    2746.71          4
+99992.0
+
+StripedWriteMap is faster than StripedMap, due to the reduced overhead from locking.
