@@ -1,0 +1,46 @@
+10.2.2
+Yes
+
+It should be noted that the three  methods are implemented differently:
+
+increment uses a runnable, as this operation calls txnInteger.increment().
+getCount uses a callable. The method "atomicGet" does not work as intended, as it appears to not be atomic.
+getSpan is not thread-safe, as the object counts-array is final and will not change size during execution.
+
+10.2.3
+
+10.2.6
+We have used method (b), transfering each bucket in a separate atomic operation.
+Yes, it gradually sums up to 4.000.000.
+
+10.2.7
+We would expect, calling transferBins on itself would hold the same data after the transfer action was completed. However, when reading the specification, it is ambiguous what it should actually do.
+From the exercise description:
+
+"Method transferBins(hist) should transfer all the counts from hist to this histogram, by adding each bin count in hist to this histogram and atomically also setting that count to zero."
+
+The order of operations are not specified, since they are supposed to be atomically. Although, it makes the most sense that a transfer infers moving amounts from a to b. This is also what our implementation does.
+
+10.3.3
+The implementations might be too defensive, and cut into performance.
+All methods fetches the buckets out of a transaction, through atomicGet.
+
+We have tried to put the lock around the minimum number of operations needed, in order to ensure concurrency, while avoiding to cut into performance. Below is a list of the operations performed in a single transaction:
+
+put:
+contains
+get
+put
+
+putIfAbsent:
+(Calls put. Contains does not need to be wrapped, as it returns the argument)
+
+remove:
+contains
+remove
+
+10.3.5
+A thread blocks using transactions by first setting a semaphore, then implementing checks in all transactions which calls retry(), given a condition. This creates a loop which prevents any transactions from performing operations which could roll back the reallocateBuckets, until it has completed.
+The semaphore could either be implemented as suggested, by checking whether newBuckets is null, or, alternatively, by having a boolean which is set to true if a reallocation is in progress.
+The advantage of this approach is, that it solves the problem with continuous rollbacks, as well as multiple reallocations competing with each other.
+The disadvantage is the that it adds complextion to each transaction, as the programmer needs to be aware of this when extending the map. It could be made easier, by having a wrapper method, which performed this check before executing the body of the actual transaction, but the programmer would still need to be aware of this quirk in this particular class.

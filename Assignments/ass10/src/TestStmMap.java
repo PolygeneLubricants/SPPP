@@ -192,10 +192,12 @@ interface OurMap<K,V> {
 
 class StmMap<K,V> implements OurMap<K,V> {
   private final TxnRef<TxnRef<ItemNode<K,V>>[]> buckets;
+  private final TxnInteger size;
 
   public StmMap(int bucketCount) {
     final TxnRef<ItemNode<K,V>>[] buckets = makeBuckets(bucketCount);
     this.buckets = StmUtils.<TxnRef<ItemNode<K,V>>[]>newTxnRef(buckets);
+      this.size = newTxnInteger(0);
   }
 
   @SuppressWarnings("unchecked") 
@@ -224,26 +226,67 @@ class StmMap<K,V> implements OurMap<K,V> {
 
   // Return value v associated with key k, or null
   public V get(K k) {
-    throw new RuntimeException("Not implemented");
+      return atomic(() -> {
+          if(containsKey(k)) {
+              final TxnRef<ItemNode<K,V>>[] bs = buckets.get();
+              final int h = getHash(k), hash = h % bs.length;
+              return bs[hash].get().v;
+          }
+          else {
+              return null;
+          }
+      });
   }
 
   public int size() {
-    throw new RuntimeException("Not implemented");
+      return atomic(() -> size.get());
   }
 
   // Put v at key k, or update if already present.  
   public V put(K k, V v) {
-    throw new RuntimeException("Not implemented");
+      final TxnRef<ItemNode<K,V>>[] bs = buckets.atomicGet();
+      final int h = getHash(k), hash = h % bs.length;
+      ItemNode<K, V> newNode = atomic(() ->
+              {
+                  if(!containsKey(k)) {
+                      size.increment();
+                  }
+
+                  ItemNode<K, V> n = new ItemNode<K, V>(k, v, bs[hash].get());
+                  bs[hash].set(n);
+                  return n;
+              }
+      );
+
+      return newNode.v;
   }
 
   // Put v at key k only if absent.  
   public V putIfAbsent(K k, V v) {
-    throw new RuntimeException("Not implemented");
+      return atomic(() -> {
+          if(containsKey(k)) {
+              return v;
+          }
+          else {
+              return put(k, v);
+          }
+      });
   }
 
   // Remove and return the value at key k if any, else return null
   public V remove(K k) {
-    throw new RuntimeException("Not implemented");
+      final TxnRef<ItemNode<K,V>>[] bs = buckets.atomicGet();
+      final int h = getHash(k), hash = h % bs.length;
+
+      return atomic(() -> {
+          if(containsKey(k)) {
+              size.decrement();
+              return bs[hash].get().v;
+          }
+          else {
+              return null;
+          }
+      });
   }
 
   // Iterate over the hashmap's entries one bucket at a time.  Since a
@@ -252,7 +295,14 @@ class StmMap<K,V> implements OurMap<K,V> {
   // This is good, because calling a consumer inside an atomic seems
   // suspicious.
   public void forEach(Consumer<K,V> consumer) {
-    throw new RuntimeException("Not implemented");
+      final TxnRef<ItemNode<K,V>>[] bs = buckets.atomicGet();
+      for (int hash=0; hash<bs.length; hash++) {
+          ItemNode<K,V> node = bs[hash].atomicGet();
+          while (node != null) {
+              consumer.accept(node.k, node.v);
+              node = node.next;
+          }
+      }
   }
 
   // public void reallocateBuckets() { 
