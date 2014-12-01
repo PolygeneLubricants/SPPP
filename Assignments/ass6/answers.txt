@@ -8,19 +8,35 @@ No
 Yes
 
 6.1.4)
-It would be safe to only use the tielock. But then we could only transfer money between
-any two acounts at a time, thus no concurrency.
+It would be safe to only use the tielock. But, then it would only possible transfer money between
+two acounts at a time. So we would essentially have a, complicated, sequencial implementation.
 
 6.2.1)
 It may deadlock because of the locking of the forks. E.g. all philosophers may take/lock the 
-left fork and then no philosopher can take/lock the right fork.
+fork to their left and then no philosopher can take/lock the fork to their right.
 
 6.2.2)
 It never deadlocks on our machine.. in the time we gave it (30 minutes).
-But, yes, the time it takes to deadlock will vary.
+But, yes, the time it takes to deadlock will ofcourse vary.
 
 6.2.3)
-We do not get a deadlock.
+We do not get a deadlock. But if we did, then jvisualvm would give os something along the
+lines of:
+
+Found one Java-level deadlock:
+=============================
+"Thread-1":
+  waiting to lock monitor some_address  (object some_address, a Fork),
+  which is held by "Thread-0"
+"Thread-2":
+  waiting to lock monitor some_address  (object some_address, a Fork),
+  which is held by "Thread-3"
+"Thread-3":
+  waiting to lock monitor some_address  (object some_address, a Fork),
+  which is held by "Thread-3"
+"Thread-0":
+  waiting to lock monitor some_address  (object some_address, a Fork),
+  which is held by "Thread-1"
 
 6.2.4)
 Done, see code.
@@ -33,11 +49,20 @@ We observe they get to eat equally often, approximately.
 
 6.4.1)
 ThreadSafe says zero potential problems.
+ThreadSafe, evidently, does not expect getSpan te be synchronized. And, neither should it be.
+The counts field is final, thus the length of it does not change, so visibility is not a concern.
 
 6.4.2)
+The method needs to lock on the instance, but we can perform the span check before acquiring the lock,
+and possibly avoid unnecessarily acquiring the lock.
+
 ThreadSafe says zero potential problems.
 
 6.4.3)
 ThreadSafe gives us "@GuardedBy annotation on field 'counts' violated"
 this mean we are accessing the field counts of an instance without locking the object
 which is guarding the field (The hist-instance in this case). 
+
+It would be a good idea to solve this issue, because one thread, s, may change counts[i] of
+the instance hist, that another thread, t, is working on in addAll. A change performed by
+thread s might not be visible to thread t.

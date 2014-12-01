@@ -26,7 +26,7 @@ interface Histogram {
     public void increment(int item);
     public int getCount(int item);
     public int getSpan();
-    public void addAll(Histogram2 hist);
+    public void addAll(Histogram hist);
 }
 
 //class Histogram1 implements Histogram {
@@ -64,20 +64,19 @@ class Histogram2 implements Histogram {
         return counts.length;
     }
 
-//    @Override
-//    public void addAll(Histogram hist) {
-//        if (hist.getSpan() != getSpan()) {
-//            throw new RuntimeException();
-//        }
-//
-//        synchronized (this) {
-//            for(int i = 0; i < counts.length; i++) {
-//                counts[i] += hist.getCount(i);
-//            }
-//        }
-//    }
-
     @Override
+    public void addAll(Histogram hist) {
+        if (hist.getSpan() != getSpan()) {
+            throw new RuntimeException();
+        }
+
+        synchronized (this) {
+            for(int i = 0; i < counts.length; i++) {
+                counts[i] += hist.getCount(i);
+            }
+        }
+    }
+
     public void addAll(Histogram2 hist) {
         if (hist.getSpan() != getSpan()) {
             throw new RuntimeException();
