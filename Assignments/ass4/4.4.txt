@@ -1,0 +1,39 @@
+4.4.1-6
+Memoizer1, 16 threads          14928036.1 ns 1312246.89         32
+Memoizer2, 16 threads           1247078.7 ns   30323.77        256
+Memoizer3, 16 threads           1323696.6 ns   92972.15        256
+Memoizer4, 16 threads           1230755.8 ns   24550.12        256
+Memoizer5, 16 threads           1832531.4 ns   30683.15        256
+Memoizer0, 16 threads           1266317.7 ns   24106.36        256
+Memoizer1, 32 threads          28408602.4 ns  298958.17         16
+Memoizer2, 32 threads           2264217.0 ns  149843.87        128
+Memoizer3, 32 threads           2295171.4 ns   55969.99        128
+Memoizer4, 32 threads           2267512.1 ns   45703.21        128
+Memoizer5, 32 threads           3002285.4 ns   34219.49        128
+Memoizer0, 32 threads           2284551.1 ns   31772.07        128
+Memoizer1, 64 threads          70700650.7 ns 1403381.43          4
+Memoizer2, 64 threads           4497643.7 ns  133028.29         64
+Memoizer3, 64 threads           4291943.8 ns   62573.08         64
+Memoizer4, 64 threads           4520390.8 ns  242842.63         64
+Memoizer5, 64 threads           5726637.5 ns  132238.48         64
+Memoizer0, 64 threads           4337301.9 ns   84657.35         64
+Memoizer1, 512 threads       3109965424.6 ns 7630493872.76          2
+Memoizer2, 512 threads         34895171.0 ns  978665.55          8
+Memoizer3, 512 threads         35669682.8 ns  579317.34          8
+Memoizer4, 512 threads         33679465.0 ns  805556.14          8
+Memoizer5, 512 threads         41156045.7 ns  826892.75          8
+Memoizer0, 512 threads         35525623.2 ns  504190.21          8
+
+4.4.7
+The lectures and literature suggests that Memoizer1 < Memoizer2 < Memoizer3 < Memoizer4.
+This makes sense as
+- Memoizer1 blocks, meaning only one thread can compute at a time,
+- Memoizer2 may perform the same computation multiple times,
+- Memoizer3 may also perform the same computation multiple times, due to the race condition (f == null).
+            But the amount of duplicated work should be significantly lower than for Memoizer2.
+- Memoizer4 eleminates any possibility of duplicated work.
+
+However, on our system Memoizer 2, 3, and 4 performs equally well.
+
+4.4.8
+We would increase the thread count and increase the overlap.

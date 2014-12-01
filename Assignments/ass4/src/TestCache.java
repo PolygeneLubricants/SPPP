@@ -3,34 +3,82 @@
 // Code from Goetz et al 5.6, written by Brian Goetz and Tim Peierls.
 // Modifications by sestoft@itu.dk * 2014-09-08
 
+import benchmarks.IntToDouble;
+
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.*;
 import java.util.function.Function;
-
+import static benchmarks.Benchmark.*;
 
 public class TestCache {
   public static void main(String[] args) throws InterruptedException {
-    Computable<Long, long[]> factorizer = new Factorizer2(),
-      cachingFactorizer = new Memoizer5<Long,long[]>(factorizer);
-    // cachingFactorizer = factorizer;
-    
-    long p = 71827636563813227L;
+      Factorizer2 f = new Factorizer2();
+      e44("Memoizer1, 16 threads", 16, new Memoizer1<>(f), () -> (double)f.getCount());
+      e44("Memoizer2, 16 threads", 16, new Memoizer2<>(f), () -> (double)f.getCount());
+      e44("Memoizer3, 16 threads", 16, new Memoizer3<>(f), () -> (double)f.getCount());
+      e44("Memoizer4, 16 threads", 16, new Memoizer4<>(f), () -> (double)f.getCount());
+      e44("Memoizer5, 16 threads", 16, new Memoizer5<>(f), () -> (double)f.getCount());
+      e44("Memoizer0, 16 threads", 16, new Memoizer<>(f), () -> (double)f.getCount());
 
-    print(factorizer.compute(p));
+      e44("Memoizer1, 32 threads", 32, new Memoizer1<>(f), () -> (double)f.getCount());
+      e44("Memoizer2, 32 threads", 32, new Memoizer2<>(f), () -> (double)f.getCount());
+      e44("Memoizer3, 32 threads", 32, new Memoizer3<>(f), () -> (double)f.getCount());
+      e44("Memoizer4, 32 threads", 32, new Memoizer4<>(f), () -> (double)f.getCount());
+      e44("Memoizer5, 32 threads", 32, new Memoizer5<>(f), () -> (double)f.getCount());
+      e44("Memoizer0, 32 threads", 32, new Memoizer<>(f), () -> (double)f.getCount());
 
-    long[] factors = cachingFactorizer.compute(p);
-    print(factors);
+      e44("Memoizer1, 64 threads", 64, new Memoizer1<>(f), () -> (double)f.getCount());
+      e44("Memoizer2, 64 threads", 64, new Memoizer2<>(f), () -> (double)f.getCount());
+      e44("Memoizer3, 64 threads", 64, new Memoizer3<>(f), () -> (double)f.getCount());
+      e44("Memoizer4, 64 threads", 64, new Memoizer4<>(f), () -> (double)f.getCount());
+      e44("Memoizer5, 64 threads", 64, new Memoizer5<>(f), () -> (double)f.getCount());
+      e44("Memoizer0, 64 threads", 64, new Memoizer<>(f), () -> (double)f.getCount());
 
-    print(cachingFactorizer.compute(p));
-    print(cachingFactorizer.compute(p));
-    print(cachingFactorizer.compute(p));
-    print(cachingFactorizer.compute(p));
-    print(cachingFactorizer.compute(p));
-    print(cachingFactorizer.compute(p));
-    print(cachingFactorizer.compute(p));
+      e44("Memoizer1, 512 threads", 512, new Memoizer1<>(f), () -> (double)f.getCount());
+      e44("Memoizer2, 512 threads", 512, new Memoizer2<>(f), () -> (double)f.getCount());
+      e44("Memoizer3, 512 threads", 512, new Memoizer3<>(f), () -> (double)f.getCount());
+      e44("Memoizer4, 512 threads", 512, new Memoizer4<>(f), () -> (double)f.getCount());
+      e44("Memoizer5, 512 threads", 512, new Memoizer5<>(f), () -> (double)f.getCount());
+      e44("Memoizer0, 512 threads", 512, new Memoizer<>(f), () -> (double)f.getCount());
   }
+
+    public static void e44(final String msg, final int threadCount, Computable<Long, long[]> computable, Callable<Double> result)
+    {
+        Mark7(msg, x -> {
+            final Thread[] threads = new Thread[threadCount];
+            final long start = 10_000_000_000L;
+
+            for (int t = 0; t < threadCount; ++t) {
+                final long start2 = start + 2000 + t * 500;
+
+                threads[t] = new Thread(() ->  {
+                    for (long i = start, j = start2; i < start + 2000; i++, j++) {
+                        try {
+                            computable.compute(i);
+                            computable.compute(j);
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+                });
+                threads[t].start();
+            }
+
+            for (int t = 0; t < threadCount; ++t) {
+                try {
+                    threads[t].join();
+                } catch (InterruptedException ignored) {
+                }
+            }
+
+            try {
+                return result.call();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
 
   private static void print(long[] arr) {
     for (long x : arr) 

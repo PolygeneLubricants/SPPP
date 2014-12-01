@@ -2,7 +2,7 @@ package benchmarks;
 // Simple microbenchmark setups
 // sestoft@itu.dk * 2013-06-02, 2014-09-10
 
-class Benchmark {
+public class Benchmark {
   public static void main(String[] args) {
     SystemInfo();
     //Mark0();
